@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de ZIP com Pasta de Imagens</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 400px;
+        }
+
+        h1 {
+            color: #4a90e2;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 2px dashed #4a90e2;
+            border-radius: 10px;
+            background-color: #eaf4fc;
+            font-size: 16px;
+            color: #333;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button {
+            background-color: #4a90e2;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #357abd;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        p {
+            font-size: 14px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerador de ZIP com Pasta de Imagens</h1>
+
+        <input type="file" id="fileInput" accept=".html">
+        <button id="generateZip">Gerar ZIP</button>
+
+        <p>Selecione um arquivo HTML para gerar um arquivo ZIP com uma pasta de imagens.</p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script>
+        document.getElementById('generateZip').addEventListener('click', function () {
+            const fileInput = document.getElementById('fileInput').files[0];
+
+            if (!fileInput) {
+                alert('Por favor, selecione um arquivo HTML!');
+                return;
+            }
+
+            const zip = new JSZip();
+
+            // Criando a pasta 'images' vazia no zip
+            zip.folder("images");
+
+            // Lendo o conteúdo do arquivo HTML
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const htmlContent = e.target.result;
+                zip.file(fileInput.name, htmlContent);
+
+                // Gerando o arquivo zip
+                zip.generateAsync({ type: "blob" })
+                    .then(function (content) {
+                        // Baixando o arquivo zip
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(content);
+                        link.download = 'arquivo_com_imagens.zip';
+                        link.click();
+                    });
+            };
+
+            reader.readAsText(fileInput);
+        });
+    </script>
+</body>
+</html>
